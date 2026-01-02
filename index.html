@@ -40,6 +40,10 @@ button:active {
   transform: scale(0.96);
 }
 
+button:disabled {
+  opacity: 0.5;
+}
+
 #result {
   margin-top: 30px;
   text-align: center;
@@ -72,7 +76,7 @@ button:active {
 <body>
 <div class="container">
   <h1>おみくじ</h1>
-  <button onclick="draw()">ひく</button>
+  <button id="drawBtn" onclick="draw()">ひく</button>
 
   <div id="result">
     <div id="fortune"></div>
@@ -172,6 +176,11 @@ const fortunes = [
 
 /* ===== おみくじを引く ===== */
 function draw() {
+  const btn = document.getElementById("drawBtn");
+
+  // ボタン無効化
+  btn.disabled = true;
+
   result.style.display = "none";
 
   setTimeout(() => {
@@ -189,6 +198,11 @@ function draw() {
       launchConfetti();
     }
   }, 1000);
+
+  // 3秒後にボタンを再度有効化
+  setTimeout(() => {
+    btn.disabled = false;
+  }, 3000);
 }
 
 /* ===== クラッカー式・紙吹雪 ===== */
