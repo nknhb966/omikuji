@@ -44,15 +44,49 @@ button:disabled {
   opacity: 0.5;
 }
 
-#result {
-  margin-top: 30px;
-  text-align: center;
-  display: none;
+.result-table {
+  width: 90vw;
+  max-width: 420px;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
 }
 
+.result-table th,
+.result-table td {
+  padding: 14px 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  text-align: left;
+  vertical-align: top;
+}
+
+.result-table th {
+  width: 70px;
+  background: #fff0d9;
+  font-weight: bold;
+}
+
+.result-table td {
+  background: #ffffff;
+}
+
+#result {
+  animation: fadeUp 0.4s ease-out;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 運勢 */
 #fortune {
-  font-size: 48px;
-  margin-bottom: 10px;
+  font-size: 26px;
+  text-align: center;
+  background: #ffddb0;
 }
 
 .detail {
@@ -79,11 +113,27 @@ button:disabled {
   <button id="drawBtn" onclick="draw()">ひく</button>
 
   <div id="result">
-    <div id="fortune"></div>
-    <div id="health" class="detail"></div>
-    <div id="love" class="detail"></div>
-    <div id="work" class="detail"></div>
-    <div id="study" class="detail"></div>
+    <table class="result-table">
+      <tr>
+        <th colspan="2" id="fortune"></th>
+      </tr>
+      <tr>
+        <th>健康</th>
+        <td id="health"></td>
+      </tr>
+      <tr>
+        <th>恋愛</th>
+        <td id="love"></td>
+      </tr>
+      <tr>
+        <th>仕事</th>
+        <td id="work"></td>
+      </tr>
+      <tr>
+        <th>勉強</th>
+        <td id="study"></td>
+      </tr>
+    </table>
   </div>
 </div>
 
@@ -187,10 +237,10 @@ function draw() {
     const f = fortunes[Math.floor(Math.random() * fortunes.length)];
 
     fortune.textContent = f.name;
-    health.textContent = "健康： " + f.health;
-    love.textContent   = "恋愛： " + f.love;
-    work.textContent   = "仕事： " + f.work;
-    study.textContent  = "勉強： " + f.study;
+    health.textContent = f.health;
+    love.textContent   = f.love;
+    work.textContent   = f.work;
+    study.textContent  = f.study;
 
     result.style.display = "block";
 
