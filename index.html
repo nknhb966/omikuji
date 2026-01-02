@@ -84,32 +84,90 @@ button:active {
 </div>
 
 <script>
-/* ===== おみくじデータ（18種） ===== */
+/* ===== おみくじデータ ===== */
 const fortunes = [
-  // 大吉系
+  /* ===== 大吉（15）===== */
   { name:"大吉", health:"絶好調。新しいことに挑戦◎", love:"運命的な出会いあり", work:"一気に進展", study:"吸収力MAX" },
-  { name:"大吉", health:"体が軽い日", love:"素直さがカギ", work:"評価される", study:"応用問題に挑戦" },
-  { name:"大吉", health:"元気いっぱい", love:"笑顔が幸運を呼ぶ", work:"自信をもってOK", study:"集中できる" },
+  { name:"大吉", health:"体が軽く感じる日", love:"素直さが好印象", work:"評価されやすい", study:"応用に挑戦" },
+  { name:"大吉", health:"元気いっぱい動けそう", love:"笑顔が幸運を呼ぶ", work:"自信をもってOK", study:"集中できる" },
+  { name:"大吉", health:"気分も体も好調", love:"良い流れに乗れる", work:"思い切りが吉", study:"理解が早い" },
+  { name:"大吉", health:"調子が上向き", love:"チャンスに気づけそう", work:"成果が見えやすい", study:"手応えあり" },
 
-  // 中吉系
+  { name:"大吉", health:"体調安定で安心", love:"自然な会話が弾む", work:"前向きに進める", study:"楽しく学べる" },
+  { name:"大吉", health:"動くほど元気に", love:"好意が伝わりやすい", work:"提案が通りやすい", study:"吸収が早い" },
+  { name:"大吉", health:"疲れにくい一日", love:"良い縁が広がる", work:"自信を持って進める", study:"集中力◎" },
+  { name:"大吉", health:"心身ともに軽やか", love:"前向きな展開", work:"成果が出やすい", study:"理解が深まる" },
+  { name:"大吉", health:"調子よく過ごせる", love:"嬉しい出来事あり", work:"スムーズに進行", study:"やる気UP" },
+
+  { name:"大吉", health:"活力に満ちた日", love:"思いが伝わる", work:"評価につながる", study:"伸びを感じる" },
+  { name:"大吉", health:"好調をキープ", love:"楽しい時間が増える", work:"自信が結果に", study:"集中が続く" },
+  { name:"大吉", health:"体も心も元気", love:"良いタイミング", work:"積極性が吉", study:"理解が進む" },
+  { name:"大吉", health:"のびのび過ごせる", love:"前向きな変化", work:"勢いに乗れる", study:"挑戦が実る" },
+  { name:"大吉", health:"安心して動ける", love:"信頼が深まる", work:"結果がついてくる", study:"好循環" },
+
+  /* ===== 中吉（15）===== */
   { name:"中吉", health:"安定。無理しない", love:"会話が大事", work:"協力が吉", study:"コツコツ型" },
   { name:"中吉", health:"少しずつ調子UP", love:"距離が縮まる", work:"準備が成功に", study:"復習◎" },
   { name:"中吉", health:"いつも通りでOK", love:"落ち着いた関係", work:"ミスが減る", study:"基礎固め" },
+  { name:"中吉", health:"体調は安定気味", love:"聞き役が吉", work:"相談が役立つ", study:"継続が力" },
+  { name:"中吉", health:"無理しなければ順調", love:"自然体が◎", work:"周囲と足並みを", study:"復習中心" },
 
-  // 小吉系
+  { name:"中吉", health:"大きな波はなし", love:"安心感が増す", work:"着実に進む", study:"積み重ね" },
+  { name:"中吉", health:"ペースを守って", love:"穏やかな流れ", work:"確認が吉", study:"丁寧に" },
+  { name:"中吉", health:"落ち着いて行動", love:"会話が鍵", work:"調整役に向く", study:"理解が深まる" },
+  { name:"中吉", health:"安定感あり", love:"信頼を大切に", work:"慎重さが武器", study:"基礎力UP" },
+  { name:"中吉", health:"無理せず好調", love:"安心できる関係", work:"地道が吉", study:"見直し◎" },
+
+  { name:"中吉", health:"体調キープ", love:"落ち着いた一日", work:"協力で前進", study:"繰り返しが効果的" },
+  { name:"中吉", health:"普段通りでOK", love:"相手を尊重して", work:"段取りが大事", study:"基本確認" },
+  { name:"中吉", health:"安定志向で", love:"無理しない", work:"調整がうまくいく", study:"地道に" },
+  { name:"中吉", health:"ペース配分を意識", love:"丁寧な対応が吉", work:"確実に進める", study:"復習吉" },
+  { name:"中吉", health:"落ち着いて過ごせる", love:"安心感を大切に", work:"堅実が正解", study:"基礎重視" },
+
+  /* ===== 小吉（15）===== */
   { name:"小吉", health:"睡眠を大切に", love:"焦らないで", work:"小さな成功あり", study:"短時間集中" },
   { name:"小吉", health:"リラックスが◎", love:"優しさが伝わる", work:"丁寧さが評価", study:"ゆっくりでOK" },
   { name:"小吉", health:"だんだん良くなる", love:"安心感を大切に", work:"立て直しの日", study:"見直し吉" },
+  { name:"小吉", health:"無理しないのが吉", love:"距離感を大切に", work:"慎重に進める", study:"基礎から" },
+  { name:"小吉", health:"休憩を意識", love:"様子を見る", work:"焦らず対応", study:"短時間が◎" },
 
-  // 吉系
+  { name:"小吉", health:"体をいたわって", love:"自然体で", work:"確認を忘れず", study:"復習向き" },
+  { name:"小吉", health:"疲れを溜めない", love:"ゆっくり関係づくり", work:"無理は禁物", study:"見直し中心" },
+  { name:"小吉", health:"ペースダウンが吉", love:"静かな時間を", work:"整える日", study:"基礎確認" },
+  { name:"小吉", health:"気分転換を", love:"焦らなくてOK", work:"慎重に進行", study:"短く区切る" },
+  { name:"小吉", health:"体調管理を意識", love:"聞き役に回る", work:"小さく前進", study:"復習が効果的" },
+
+  { name:"小吉", health:"ゆったり過ごす", love:"安心第一", work:"立て直し中", study:"無理しない" },
+  { name:"小吉", health:"休み休みで", love:"落ち着いて対応", work:"確認重視", study:"基礎重視" },
+  { name:"小吉", health:"無理せずOK", love:"距離を保つ", work:"準備の日", study:"ゆっくり理解" },
+  { name:"小吉", health:"少し休もう", love:"焦らず進める", work:"整える時間", study:"復習中心" },
+  { name:"小吉", health:"体を労わって", love:"穏やかに", work:"慎重第一", study:"基本に戻る" },
+
+  /* ===== 吉（15）===== */
   { name:"吉", health:"食事に気を配って", love:"自然体が◎", work:"計画重視", study:"基本を確認" },
   { name:"吉", health:"笑うと元気", love:"楽しい時間あり", work:"雰囲気良し", study:"続けることが力" },
   { name:"吉", health:"無理しない", love:"様子を見る", work:"慎重に", study:"積み重ね" },
+  { name:"吉", health:"気楽に過ごす", love:"自然な流れ", work:"焦らず対応", study:"継続が吉" },
+  { name:"吉", health:"体調安定", love:"落ち着いた関係", work:"無理のない計画", study:"基礎重視" },
 
-  // 末吉・凶系
-  { name:"末吉", health:"疲れをためない", love:"聞き役が吉", work:"確認大事", study:"復習中心" },
-  { name:"末吉", health:"休憩を忘れずに", love:"距離感大切", work:"ペース調整", study:"焦らない" },
-  { name:"凶", health:"今日は無理しない", love:"自分を守って", work:"慎重第一", study:"できる所から" }
+  { name:"吉", health:"普段通りでOK", love:"安心感あり", work:"淡々と進める", study:"繰り返しが力" },
+  { name:"吉", health:"調子を整えて", love:"無理しない", work:"着実に", study:"基本を大切に" },
+  { name:"吉", health:"気分転換が吉", love:"楽しく会話", work:"雰囲気重視", study:"続けること" },
+  { name:"吉", health:"落ち着いて行動", love:"自然な距離感", work:"無理せず進行", study:"基礎固め" },
+  { name:"吉", health:"体を動かすと◎", love:"前向きな気持ち", work:"準備が整う", study:"集中しやすい" },
+
+  { name:"吉", health:"軽く動くと良い", love:"穏やかな流れ", work:"計画通り", study:"基礎確認" },
+  { name:"吉", health:"いつも通りが吉", love:"安心第一", work:"堅実に", study:"コツコツ" },
+  { name:"吉", health:"無理しない一日", love:"静かな時間", work:"落ち着いた対応", study:"基本中心" },
+  { name:"吉", health:"体調管理を意識", love:"自然体でOK", work:"段取り重視", study:"継続力" },
+  { name:"吉", health:"気楽に進める", love:"安心感あり", work:"穏やかに進行", study:"積み重ね" }
+
+  /* ===== 凶（5）===== */
+  { name:"凶", health:"今日は無理しない", love:"自分を守る時間を", work:"慎重第一", study:"できる所から" },
+  { name:"凶", health:"疲れが出やすい日", love:"距離を保って", work:"確認を怠らない", study:"焦らず進める" },
+  { name:"凶", health:"休憩を多めに", love:"無理に進めない", work:"立ち止まって見直し", study:"復習中心" },
+  { name:"凶", health:"体調管理を最優先", love:"自分の気持ちを大切に", work:"慎重な判断が吉", study:"基礎だけで十分" },
+  { name:"凶", health:"今日は省エネで", love:"深追いしない", work:"無理せず現状維持", study:"できる範囲でOK" }
 ];
 
 /* ===== おみくじを引く ===== */
