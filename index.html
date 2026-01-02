@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>おみくじ</title>
+<style>
+  body {
+    text-align: center;
+    font-family: sans-serif;
+    background: #f7f7f7;
+    overflow: hidden;
+  }
+
+  h1 {
+    margin-top: 40px;
+  }
+
+  button {
+    font-size: 20px;
+    padding: 10px 30px;
+    cursor: pointer;
+  }
+
+  #result {
+    font-size: 48px;
+    margin-top: 40px;
+    display: none;
+  }
+
+  /* 紙吹雪 */
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    opacity: 0.8;
+    animation: fall 2s linear forwards;
+  }
+
+  @keyframes fall {
+    from {
+      transform: translateY(-10px) rotate(0deg);
+    }
+    to {
+      transform: translateY(100vh) rotate(360deg);
+    }
+  }
+</style>
+</head>
+
+<body>
+  <h1>おみくじ</h1>
+  <button onclick="draw()">ひく！</button>
+  <div id="result"></div>
+
+<script>
+const fortunes = ["大吉", "中吉", "小吉", "吉", "末吉", "凶"];
+
+function draw() {
+  const resultDiv = document.getElementById("result");
+  resultDiv.style.display = "none";
+  resultDiv.textContent = "";
+
+  // 1秒待つ
+  setTimeout(() => {
+    // 結果表示
+    const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    resultDiv.textContent = fortune;
+    resultDiv.style.display = "block";
+
+    // 紙吹雪
+    for (let i = 0; i < 80; i++) {
+      createConfetti();
+    }
+  }, 1000);
+}
+
+function createConfetti() {
+  const confetti = document.createElement("div");
+  confetti.className = "confetti";
+  confetti.style.left = Math.random() * window.innerWidth + "px";
+  confetti.style.backgroundColor =
+    `hsl(${Math.random() * 360}, 100%, 60%)`;
+  confetti.style.animationDuration =
+    1 + Math.random() * 2 + "s";
+
+  document.body.appendChild(confetti);
+
+  // 終わったら削除
+  setTimeout(() => {
+    confetti.remove();
+  }, 3000);
+}
+</script>
+</body>
+</html>
