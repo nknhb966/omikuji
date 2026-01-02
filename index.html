@@ -147,11 +147,11 @@ function launchConfetti() {
 
   // 初速（パン！）
   let vx = (fromLeft ? 1 : -1) * (7 + Math.random() * 7);
-  let vy = -14 - Math.random() * 6;
+  let vy = -15 - Math.random() * 6;
 
   // 物理パラメータ
   const gravity = 0.4;
-  const air = 0.95;
+  const air = 0.97;
   const sway = Math.random() * 0.15 + 0.05;
   let angle = Math.random() * Math.PI * 2;
 
