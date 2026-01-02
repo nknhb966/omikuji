@@ -10,8 +10,8 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   background: linear-gradient(#fff6e5, #ffe4c4);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   overflow: hidden;
 }
 
@@ -23,17 +23,15 @@ html, body {
   align-items: center;
 }
 
-h1 {
-  font-size: 32px;
-}
+h1 { font-size: 32px; }
 
 button {
   font-size: 22px;
   padding: 16px 40px;
-  border: none;
   border-radius: 30px;
+  border: none;
   background: #ff7a18;
-  color: white;
+  color: #fff;
 }
 
 #result {
@@ -52,37 +50,13 @@ button {
   margin: 6px 0;
 }
 
-/* 🎊 紙吹雪 */
+/* 紙吹雪 */
 .confetti {
   position: absolute;
-  width: 12px;
+  width: 10px;
   height: 18px;
   opacity: 0.95;
-  animation: confettiMove 3.5s ease-out forwards;
-}
-
-@keyframes confettiMove {
-  /* クラッカー発射 */
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-
-  /* 中央へ勢いよく */
-  30% {
-    transform:
-      translate(var(--burst-x), var(--burst-y))
-      rotate(360deg);
-  }
-
-  /* ひらひら落下 */
-  100% {
-    transform:
-      translate(
-        calc(var(--burst-x) + var(--fall-x)),
-        calc(var(--burst-y) + var(--fall-y))
-      )
-      rotate(900deg);
-  }
+  pointer-events: none;
 }
 </style>
 </head>
@@ -107,21 +81,21 @@ const fortunes = [
   { name:"大大吉", health:"元気いっぱい", love:"素直が吉", work:"評価される", study:"応用◎" },
   { name:"大吉", health:"快調", love:"笑顔が鍵", work:"自信OK", study:"集中力UP" },
 
+  { name:"中吉", health:"安定", love:"会話大切", work:"協力が鍵", study:"コツコツ" },
   { name:"向上中吉", health:"回復中", love:"距離が縮まる", work:"準備が吉", study:"復習◎" },
-  { name:"安定中吉", health:"安定", love:"落ち着く", work:"順調", study:"基礎固め" },
-  { name:"中吉", health:"無理しない", love:"会話大切", work:"協力が鍵", study:"コツコツ" },
+  { name:"安定中吉", health:"無理なし", love:"落ち着く", work:"順調", study:"基礎固め" },
 
-  { name:"ほのぼの小吉", health:"リラックス", love:"優しさ◎", work:"丁寧に", study:"マイペース" },
-  { name:"回復小吉", health:"少しずつ", love:"安心感", work:"立て直し", study:"見直し" },
   { name:"小吉", health:"睡眠大事", love:"焦らず", work:"小さな成功", study:"短時間" },
+  { name:"回復小吉", health:"少しずつ", love:"安心感", work:"立て直し", study:"見直し" },
+  { name:"ほのぼの小吉", health:"リラックス", love:"優しさ◎", work:"丁寧に", study:"マイペース" },
 
-  { name:"にこにこ吉", health:"笑顔◎", love:"楽しい", work:"雰囲気良し", study:"継続力" },
+  { name:"吉", health:"自然体", love:"楽しい", work:"計画重視", study:"基本" },
+  { name:"にこにこ吉", health:"笑顔◎", love:"良い流れ", work:"雰囲気良し", study:"継続力" },
   { name:"じっくり吉", health:"無理せず", love:"様子見", work:"慎重に", study:"積み重ね" },
-  { name:"吉", health:"食事注意", love:"自然体", work:"計画重視", study:"基本" },
 
-  { name:"ゆっくり末吉", health:"休憩を", love:"距離感", work:"ペース調整", study:"焦らず" },
-  { name:"末吉", health:"疲れ注意", love:"聞き役", work:"確認", study:"復習" },
-  { name:"凶", health:"無理しない", love:"自分優先", work:"慎重第一", study:"できる所から" }
+  { name:"末吉", health:"休憩を", love:"聞き役", work:"確認", study:"復習" },
+  { name:"ゆっくり末吉", health:"ペース調整", love:"距離感", work:"慎重", study:"焦らず" },
+  { name:"凶", health:"今日は無理しない", love:"自分優先", work:"慎重第一", study:"できる所から" }
 ];
 
 function draw() {
@@ -129,46 +103,58 @@ function draw() {
 
   setTimeout(() => {
     const f = fortunes[Math.floor(Math.random() * fortunes.length)];
-
     fortune.textContent = f.name;
     health.textContent = "健康： " + f.health;
     love.textContent   = "恋愛： " + f.love;
     work.textContent   = "仕事： " + f.work;
     study.textContent  = "勉強： " + f.study;
-
     result.style.display = "block";
 
-    for (let i = 0; i < 90; i++) createConfetti();
+    for (let i = 0; i < 120; i++) launchConfetti();
   }, 1000);
 }
 
-function createConfetti() {
+/* ===== 物理っぽい紙吹雪 ===== */
+function launchConfetti() {
   const c = document.createElement("div");
   c.className = "confetti";
   c.style.backgroundColor = `hsl(${Math.random()*360},100%,60%)`;
 
   const fromLeft = Math.random() < 0.5;
-  const startX = fromLeft ? 0 : window.innerWidth;
-  const startY = window.innerHeight * 0.75;
+  let x = fromLeft ? 0 : window.innerWidth;
+  let y = window.innerHeight * 0.75;
 
-  c.style.left = startX + "px";
-  c.style.top  = startY + "px";
+  let vx = (fromLeft ? 1 : -1) * (6 + Math.random() * 6);
+  let vy = -10 - Math.random() * 6;
 
-  /* クラッカー発射（中央方向） */
-  const burstX = (window.innerWidth / 2 - startX) + (Math.random()*100 - 50);
-  const burstY = -200 + Math.random()*100;
+  const gravity = 0.35;
+  const air = 0.995;
+  const sway = Math.random() * 0.1 + 0.05;
+  let angle = Math.random() * Math.PI * 2;
 
-  /* 落下（ひらひら） */
-  const fallX = Math.random()*200 - 100;
-  const fallY = window.innerHeight + 200;
-
-  c.style.setProperty("--burst-x", burstX + "px");
-  c.style.setProperty("--burst-y", burstY + "px");
-  c.style.setProperty("--fall-x", fallX + "px");
-  c.style.setProperty("--fall-y", fallY + "px");
-
+  c.style.left = x + "px";
+  c.style.top  = y + "px";
   document.body.appendChild(c);
-  setTimeout(() => c.remove(), 4000);
+
+  function update() {
+    vx *= air;
+    vy = vy * air + gravity;
+
+    angle += sway;
+    x += vx + Math.sin(angle) * 1.2;
+    y += vy;
+
+    c.style.transform =
+      `translate(${x}px, ${y}px) rotate(${angle * 180 / Math.PI}deg)`;
+
+    if (y < window.innerHeight + 100) {
+      requestAnimationFrame(update);
+    } else {
+      c.remove();
+    }
+  }
+
+  requestAnimationFrame(update);
 }
 </script>
 </body>
