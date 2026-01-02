@@ -2,93 +2,183 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>おみくじ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スマホおみくじ</title>
+
 <style>
-  body {
-    text-align: center;
-    font-family: sans-serif;
-    background: #f7f7f7;
-    overflow: hidden;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  background: linear-gradient(#fff6e5, #ffe4c4);
+  overflow: hidden;
+}
 
-  h1 {
-    margin-top: 40px;
-  }
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
-  button {
-    font-size: 20px;
-    padding: 10px 30px;
-    cursor: pointer;
-  }
+h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
 
-  #result {
-    font-size: 48px;
-    margin-top: 40px;
-    display: none;
-  }
+button {
+  font-size: 22px;
+  padding: 16px 40px;
+  border: none;
+  border-radius: 30px;
+  background: #ff7a18;
+  color: white;
+}
 
-  /* 紙吹雪 */
-  .confetti {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    opacity: 0.8;
-    animation: fall 2s linear forwards;
-  }
+button:active {
+  transform: scale(0.96);
+}
 
-  @keyframes fall {
-    from {
-      transform: translateY(-10px) rotate(0deg);
-    }
-    to {
-      transform: translateY(100vh) rotate(360deg);
-    }
+#result {
+  margin-top: 30px;
+  text-align: center;
+  display: none;
+}
+
+#fortune {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.detail {
+  font-size: 16px;
+  margin: 6px 0;
+}
+
+/* 紙吹雪 */
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 14px;
+  opacity: 0.9;
+  animation: fly 1s ease-out forwards,
+             fall 2.5s ease-in forwards;
+}
+
+@keyframes fly {
+  from {
+    transform: translate(var(--sx), var(--sy)) rotate(0deg);
   }
+  to {
+    transform: translate(50vw, 40vh) rotate(180deg);
+  }
+}
+
+@keyframes fall {
+  from {
+    transform: translate(50vw, 40vh) rotate(180deg);
+  }
+  to {
+    transform: translate(calc(50vw + var(--dx)), 110vh) rotate(720deg);
+  }
+}
 </style>
 </head>
 
 <body>
+<div class="container">
   <h1>おみくじ</h1>
-  <button onclick="draw()">ひく！</button>
-  <div id="result"></div>
+  <button onclick="draw()">ひく</button>
+
+  <div id="result">
+    <div id="fortune"></div>
+    <div id="health" class="detail"></div>
+    <div id="love" class="detail"></div>
+    <div id="work" class="detail"></div>
+    <div id="study" class="detail"></div>
+  </div>
+</div>
 
 <script>
-const fortunes = ["大吉", "中吉", "小吉", "吉", "末吉", "凶"];
+const fortunes = [
+  {
+    name: "大吉",
+    health: "体調ばっちり。外で体を動かすと◎",
+    love: "思い切った一歩が吉",
+    work: "自信をもって進めてOK",
+    study: "集中力アップ。復習がはかどる"
+  },
+  {
+    name: "中吉",
+    health: "無理しなければ安定",
+    love: "会話を大切にすると良い流れ",
+    work: "周囲との協力がカギ",
+    study: "コツコツ続けると成果あり"
+  },
+  {
+    name: "小吉",
+    health: "睡眠を大事に",
+    love: "焦らず自然体で",
+    work: "小さな達成を積み重ねよう",
+    study: "短時間集中が◎"
+  },
+  {
+    name: "吉",
+    health: "食事に気をつけると運気UP",
+    love: "笑顔がチャンスを呼ぶ",
+    work: "準備が成功につながる",
+    study: "基礎を見直そう"
+  },
+  {
+    name: "末吉",
+    health: "疲れをためない工夫を",
+    love: "相手の話をよく聞いて",
+    work: "慎重さが武器になる",
+    study: "復習重視で"
+  },
+  {
+    name: "凶",
+    health: "今日は無理しないで",
+    love: "距離感を大切に",
+    work: "確認をしっかり",
+    study: "できるところからでOK"
+  }
+];
 
 function draw() {
-  const resultDiv = document.getElementById("result");
-  resultDiv.style.display = "none";
-  resultDiv.textContent = "";
+  const result = document.getElementById("result");
+  result.style.display = "none";
 
-  // 1秒待つ
   setTimeout(() => {
-    // 結果表示
-    const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-    resultDiv.textContent = fortune;
-    resultDiv.style.display = "block";
+    const f = fortunes[Math.floor(Math.random() * fortunes.length)];
 
-    // 紙吹雪
-    for (let i = 0; i < 80; i++) {
-      createConfetti();
-    }
+    document.getElementById("fortune").textContent = f.name;
+    document.getElementById("health").textContent = "健康： " + f.health;
+    document.getElementById("love").textContent   = "恋愛： " + f.love;
+    document.getElementById("work").textContent   = "仕事： " + f.work;
+    document.getElementById("study").textContent  = "勉強： " + f.study;
+
+    result.style.display = "block";
+
+    for (let i = 0; i < 60; i++) createConfetti();
   }, 1000);
 }
 
 function createConfetti() {
-  const confetti = document.createElement("div");
-  confetti.className = "confetti";
-  confetti.style.left = Math.random() * window.innerWidth + "px";
-  confetti.style.backgroundColor =
-    `hsl(${Math.random() * 360}, 100%, 60%)`;
-  confetti.style.animationDuration =
-    1 + Math.random() * 2 + "s";
+  const c = document.createElement("div");
+  c.className = "confetti";
+  c.style.backgroundColor = `hsl(${Math.random()*360},100%,60%)`;
 
-  document.body.appendChild(confetti);
+  const fromLeft = Math.random() < 0.5;
+  c.style.setProperty("--sx", fromLeft ? "-20vw" : "120vw");
+  c.style.setProperty("--sy", "90vh");
+  c.style.setProperty("--dx", (Math.random() * 200 - 100) + "px");
 
-  // 終わったら削除
-  setTimeout(() => {
-    confetti.remove();
-  }, 3000);
+  document.body.appendChild(c);
+
+  setTimeout(() => c.remove(), 4000);
 }
 </script>
 </body>
