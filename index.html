@@ -10,7 +10,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   background: linear-gradient(#fff6e5, #ffe4c4);
   overflow: hidden;
 }
@@ -60,29 +60,32 @@ button:active {
 /* 紙吹雪 */
 .confetti {
   position: absolute;
-  width: 10px;
-  height: 14px;
+  width: 14px;
+  height: 18px;
   opacity: 0.9;
-  animation: fly 1s ease-out forwards,
-             fall 2.5s ease-in forwards;
+  animation:
+    move 3s ease-out forwards,
+    rotate 3s linear forwards;
 }
 
-@keyframes fly {
-  from {
-    transform: translate(var(--sx), var(--sy)) rotate(0deg);
+@keyframes move {
+  0% {
+    transform: translate(0, 0);
   }
-  to {
-    transform: translate(50vw, 40vh) rotate(180deg);
+  40% {
+    transform: translate(
+      calc(var(--tx) * 0.6),
+      calc(var(--ty) * 0.6)
+    );
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty));
   }
 }
 
-@keyframes fall {
-  from {
-    transform: translate(50vw, 40vh) rotate(180deg);
-  }
-  to {
-    transform: translate(calc(50vw + var(--dx)), 110vh) rotate(720deg);
-  }
+@keyframes rotate {
+  from { rotate: 0deg; }
+  to   { rotate: 720deg; }
 }
 </style>
 </head>
@@ -103,48 +106,30 @@ button:active {
 
 <script>
 const fortunes = [
-  {
-    name: "大吉",
-    health: "体調ばっちり。外で体を動かすと◎",
-    love: "思い切った一歩が吉",
-    work: "自信をもって進めてOK",
-    study: "集中力アップ。復習がはかどる"
-  },
-  {
-    name: "中吉",
-    health: "無理しなければ安定",
-    love: "会話を大切にすると良い流れ",
-    work: "周囲との協力がカギ",
-    study: "コツコツ続けると成果あり"
-  },
-  {
-    name: "小吉",
-    health: "睡眠を大事に",
-    love: "焦らず自然体で",
-    work: "小さな達成を積み重ねよう",
-    study: "短時間集中が◎"
-  },
-  {
-    name: "吉",
-    health: "食事に気をつけると運気UP",
-    love: "笑顔がチャンスを呼ぶ",
-    work: "準備が成功につながる",
-    study: "基礎を見直そう"
-  },
-  {
-    name: "末吉",
-    health: "疲れをためない工夫を",
-    love: "相手の話をよく聞いて",
-    work: "慎重さが武器になる",
-    study: "復習重視で"
-  },
-  {
-    name: "凶",
-    health: "今日は無理しないで",
-    love: "距離感を大切に",
-    work: "確認をしっかり",
-    study: "できるところからでOK"
-  }
+  // 大吉系
+  { name:"超大吉", health:"絶好調。新しいことに挑戦◎", love:"運命的な出会いあり", work:"一気に進展", study:"吸収力MAX" },
+  { name:"大大吉", health:"体が軽い日", love:"素直さがカギ", work:"評価される", study:"応用問題に挑戦" },
+  { name:"大吉", health:"元気いっぱい", love:"笑顔が幸運を呼ぶ", work:"自信をもってOK", study:"集中できる" },
+
+  // 中吉系
+  { name:"中吉", health:"安定。無理しない", love:"会話が大事", work:"協力が吉", study:"コツコツ型" },
+  { name:"向上中吉", health:"少しずつ調子UP", love:"距離が縮まる", work:"準備が成功に", study:"復習◎" },
+  { name:"安定中吉", health:"いつも通りでOK", love:"落ち着いた関係", work:"ミスが減る", study:"基礎固め" },
+
+  // 小吉系
+  { name:"小吉", health:"睡眠を大切に", love:"焦らないで", work:"小さな成功あり", study:"短時間集中" },
+  { name:"ほのぼの小吉", health:"リラックスが◎", love:"優しさが伝わる", work:"丁寧さが評価", study:"ゆっくりでOK" },
+  { name:"回復小吉", health:"だんだん良くなる", love:"安心感を大切に", work:"立て直しの日", study:"見直し吉" },
+
+  // 吉系
+  { name:"吉", health:"食事に気を配って", love:"自然体が◎", work:"計画重視", study:"基本を確認" },
+  { name:"にこにこ吉", health:"笑うと元気", love:"楽しい時間あり", work:"雰囲気良し", study:"続けることが力" },
+  { name:"じっくり吉", health:"無理しない", love:"様子を見る", work:"慎重に", study:"積み重ね" },
+
+  // 末吉・凶系
+  { name:"末吉", health:"疲れをためない", love:"聞き役が吉", work:"確認大事", study:"復習中心" },
+  { name:"ゆっくり末吉", health:"休憩を忘れずに", love:"距離感大切", work:"ペース調整", study:"焦らない" },
+  { name:"凶", health:"今日は無理しない", love:"自分を守って", work:"慎重第一", study:"できる所から" }
 ];
 
 function draw() {
@@ -154,15 +139,15 @@ function draw() {
   setTimeout(() => {
     const f = fortunes[Math.floor(Math.random() * fortunes.length)];
 
-    document.getElementById("fortune").textContent = f.name;
-    document.getElementById("health").textContent = "健康： " + f.health;
-    document.getElementById("love").textContent   = "恋愛： " + f.love;
-    document.getElementById("work").textContent   = "仕事： " + f.work;
-    document.getElementById("study").textContent  = "勉強： " + f.study;
+    fortune.textContent = f.name;
+    health.textContent = "健康： " + f.health;
+    love.textContent   = "恋愛： " + f.love;
+    work.textContent   = "仕事： " + f.work;
+    study.textContent  = "勉強： " + f.study;
 
     result.style.display = "block";
 
-    for (let i = 0; i < 60; i++) createConfetti();
+    for (let i = 0; i < 80; i++) createConfetti();
   }, 1000);
 }
 
@@ -172,12 +157,19 @@ function createConfetti() {
   c.style.backgroundColor = `hsl(${Math.random()*360},100%,60%)`;
 
   const fromLeft = Math.random() < 0.5;
-  c.style.setProperty("--sx", fromLeft ? "-20vw" : "120vw");
-  c.style.setProperty("--sy", "90vh");
-  c.style.setProperty("--dx", (Math.random() * 200 - 100) + "px");
+  const startX = fromLeft ? 20 : window.innerWidth - 20;
+  const startY = window.innerHeight - 20;
+
+  c.style.left = startX + "px";
+  c.style.top  = startY + "px";
+
+  const tx = window.innerWidth / 2 - startX + (Math.random()*200 - 100);
+  const ty = -window.innerHeight + Math.random()*200;
+
+  c.style.setProperty("--tx", tx + "px");
+  c.style.setProperty("--ty", ty + "px");
 
   document.body.appendChild(c);
-
   setTimeout(() => c.remove(), 4000);
 }
 </script>
