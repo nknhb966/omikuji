@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>御神籤</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --gold:#c9943a; --gold-light:#f0d08a; --red:#c0392b; --dark:#1a1005; --parchment:#fdf6e3; }
+html,body { height:100%; background:#1a1005; font-family:"Hiragino Mincho ProN","Yu Mincho","MS Mincho",serif; overflow:hidden; color:var(--dark); }
+.bg { position:fixed; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(201,148,58,.18) 0%,transparent 60%),radial-gradient(ellipse at 50% 100%,rgba(192,57,43,.12) 0%,transparent 60%),#1a1005; z-index:0; }
+.stars { position:fixed; inset:0; pointer-events:none; z-index:0; }
+.star { position:absolute; border-radius:50%; background:rgba(255,255,220,.9); animation:twinkle var(--d,3s) ease-in-out infinite; }
+@keyframes twinkle { 0%,100%{opacity:.2;transform:scale(1)} 50%{opacity:.9;transform:scale(1.3)} }
+.wrap { position:relative; z-index:1; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; gap:20px; }
+
+/* タイトル */
+.title-area { text-align:center; }
+.title-jp { font-size:clamp(13px,3.5vw,17px); letter-spacing:.6em; color:var(--gold-light); opacity:.8; margin-bottom:4px; }
+.title-main { font-size:clamp(52px,14vw,72px); font-weight:bold; color:var(--gold-light); letter-spacing:.15em; line-height:1; text-shadow:0 0 40px rgba(201,148,58,.6),0 2px 4px rgba(0,0,0,.5); }
+.title-main::before,.title-main::after { content:"❖"; font-size:.35em; vertical-align:middle; color:var(--gold); margin:0 .3em; opacity:.7; }
+.subtitle { font-size:clamp(11px,2.5vw,13px); color:rgba(240,208,138,.55); letter-spacing:.4em; margin-top:6px; }
+
+/* 筒 */
+.tube-area { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.tube-wrapper { cursor:pointer; transition:transform .15s; user-select:none; }
+.tube-wrapper:hover { transform:scale(1.04); }
+.tube-wrapper:active { transform:scale(0.97); }
+.tube { width:40px; height:130px; position:relative; will-change: transform; }
+.tube-body { width:40px; height:130px; border-radius:8px 8px 40px 40px; background:linear-gradient(135deg,#8b4513 0%,#c0632a 30%,#d4752f 50%,#a0501e 70%,#6b3510 100%); box-shadow:inset 2px 0 8px rgba(255,200,100,.2),inset -2px 0 8px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.5); position:relative; overflow:hidden; }
+.tube-body::before { position:absolute; z-index: 1; top:10%; left:20%; width:15%; height:60%; background:rgba(255,230,150,.15); border-radius:50%; filter:blur(3px); }
+.tube-body::after { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(90deg); font-size:11px; letter-spacing:.4em; color:rgba(255,220,120,.5); white-space:nowrap; }
+.tube-top { position:absolute; z-index: 3; top:-6px; left:50%; transform:translateX(-50%) translateZ(0); width:44px; height:20px; border-radius:6px 6px 2px 2px; background:linear-gradient(180deg,#d4862f 0%,#a05020 100%); box-shadow:0 -2px 6px rgba(0,0,0,.4); }
+.tube-hint { font-size:12px; color:rgba(240,208,138,.55); letter-spacing:.2em; animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+.tube-body.shaking { animation:shake .6s ease-in-out; }
+
+.tube.shaking { animation: shake .6s ease-in-out; }
+
+@keyframes shake { 0%{transform:rotate(0)translateX(0)} 15%{transform:rotate(-12deg)translateX(-4px)} 30%{transform:rotate(12deg)translateX(4px)} 45%{transform:rotate(-10deg)translateX(-3px)} 60%{transform:rotate(10deg)translateX(3px)} 75%{transform:rotate(-5deg)translateX(-2px)} 90%{transform:rotate(5deg)translateX(2px)} 100%{transform:rotate(0)translateX(0)} }
+.stick { position:absolute; top:-20px; left:50%; transform:translateX(-50%) translateY(50px); z-index: 5; width:10px; height:40px; background:linear-gradient(180deg,#f5e8c0 0%,#d4c080 100%); border-radius:3px 3px 1px 1px; opacity:0; transition:all .5s ease-out; pointer-events:none; }
+.stick.out { transform:translateX(-50%) translateY(-30px); opacity:1; }
+.stick-num { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(90deg); font-size:9px; color:var(--red); white-space:nowrap; }
+
+/* ローディング */
+.loading { display:none; flex-direction:column; align-items:center; gap:12px; }
+.loading.show { display:flex; }
+.loading-text { color:var(--gold-light); font-size:14px; letter-spacing:.3em; animation:fadeFlash 1.2s ease-in-out infinite; }
+@keyframes fadeFlash { 0%,100%{opacity:.4} 50%{opacity:1} }
+.loading-dots { display:flex; gap:8px; }
+.dot { width:8px; height:8px; border-radius:50%; background:var(--gold); animation:dotBounce 1.2s ease-in-out infinite; }
+.dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+@keyframes dotBounce { 0%,100%{transform:translateY(0);opacity:.4} 50%{transform:translateY(-8px);opacity:1} }
+
+/* 結果カード */
+.result-card { display:none; width:min(90vw,420px); max-height:80vh; overflow-y:auto; background:var(--parchment); border-radius:4px 4px 8px 8px; box-shadow:0 0 0 1px rgba(201,148,58,.4),0 0 0 3px rgba(201,148,58,.15),0 12px 48px rgba(0,0,0,.6); animation:unfurl .6s cubic-bezier(.22,1,.36,1); transform-origin:top center; position:relative; scrollbar-width:thin; scrollbar-color:rgba(201,148,58,.3) transparent; }
+.result-card.show { display:block; }
+@keyframes unfurl { from{transform:scaleY(0.05) translateY(-20px);opacity:0} to{transform:scaleY(1) translateY(0);opacity:1} }
+.card-ribbon { height:8px; position:sticky; top:0; z-index:2; background:repeating-linear-gradient(90deg,var(--red) 0px,var(--red) 12px,var(--gold) 12px,var(--gold) 24px); }
+.result-card::before { content:""; position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(201,148,58,.07) 28px,rgba(201,148,58,.07) 29px); pointer-events:none; z-index:0; }
+.card-header { padding:16px 20px 12px; text-align:center; border-bottom:1px solid rgba(201,148,58,.3); position:relative; z-index:1; }
+.card-label { font-size:11px; letter-spacing:.5em; color:rgba(26,16,5,.4); margin-bottom:4px; }
+.fortune-name { font-size:clamp(36px,10vw,48px); font-weight:bold; letter-spacing:.25em; line-height:1; }
+.fortune-name.daikichi { color:var(--red); text-shadow:0 0 20px rgba(192,57,43,.3); }
+.fortune-name.chukichi { color:#c0632a; }
+.fortune-name.shokichi { color:#7a6020; }
+.fortune-name.kichi    { color:#2c6b3a; }
+.fortune-name.kyo      { color:#444; }
+.fortune-sub { font-size:11px; letter-spacing:.25em; color:rgba(26,16,5,.4); margin-top:4px; }
+.mikuji-number { position:absolute; top:8px; right:12px; font-size:10px; color:rgba(26,16,5,.25); letter-spacing:.2em; font-family:-apple-system,sans-serif; }
+.items { padding:8px 16px 16px; display:flex; flex-direction:column; position:relative; z-index:1; }
+.item { display:grid; grid-template-columns:52px 1fr; border-bottom:1px solid rgba(201,148,58,.2); padding:10px 0; }
+.item:last-child { border-bottom:none; }
+.item-label { display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:3px; padding-top:2px; }
+.item-icon { font-size:20px; line-height:1; }
+.item-name { font-size:11px; letter-spacing:.15em; color:rgba(26,16,5,.5); }
+.item-text { font-size:13px; line-height:1.75; color:#2a1a08; padding-left:8px; border-left:2px solid rgba(201,148,58,.35); }
+.retry-area { padding:12px 20px 16px; text-align:center; border-top:1px solid rgba(201,148,58,.2); position:relative; z-index:1; }
+.count-badge { font-size:10px; color:rgba(26,16,5,.3); font-family:-apple-system,sans-serif; margin-bottom:8px; }
+.retry-btn { background:transparent; border:1px solid rgba(201,148,58,.5); color:var(--gold); font-family:"Hiragino Mincho ProN",serif; font-size:13px; letter-spacing:.3em; padding:9px 28px; border-radius:3px; cursor:pointer; transition:all .2s; }
+.retry-btn:hover { background:rgba(201,148,58,.12); border-color:var(--gold); }
+.retry-btn:active { transform:scale(0.97); }
+.confetti-piece { position:fixed; pointer-events:none; z-index:999; border-radius:2px; }
+.error-msg { display:none; color:rgba(240,208,138,.7); font-size:13px; letter-spacing:.1em; text-align:center; padding:16px; }
+.error-msg.show { display:block; }
+@media(max-height:700px){ .wrap{gap:12px;padding:12px} .title-main{font-size:44px} .tube{width:64px;height:104px} .tube-body{width:64px;height:104px} .tube-top{width:68px} }
+</style>
+
+</head>
+<body>
+<div class="bg"></div>
+<div class="stars" id="stars"></div>
+<div class="wrap">
+  <div class="title-area">
+    <div class="title-jp">縁起みくじ</div>
+    <div class="title-main">御神籤</div>
+    <div class="subtitle">今日の運勢を占う</div>
+  </div>
+
+  <div class="tube-area" id="tubeArea">
+    <div class="tube-wrapper" id="tubeWrapper" onclick="startDraw()">
+      <div class="tube">
+        <div class="tube-body" id="tubeBody"></div>
+        <div class="stick" id="stick"><div class="stick-num"></div></div>
+        <div class="tube-top"></div>
+      </div>
+    </div>
+    <div class="tube-hint" id="tubeHint">筒を振ってひく</div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="loading-text" id="loadingText">御神籤、調えております…</div>
+    <div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  </div>
+
+  <div class="error-msg" id="errorMsg">
+    データの読み込みに失敗しました。<br>
+    <small style="font-size:11px;opacity:.7">omikuji_data.json と同じフォルダに配置してください</small>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="card-ribbon"></div>
+    <div class="card-header">
+      <div class="card-label">本日の運勢</div>
+      <div class="fortune-name" id="fortuneName"></div>
+      <div class="fortune-sub" id="fortuneSub"></div>
+      <div class="mikuji-number" id="mikujiNum"></div>
+    </div>
+    <div class="items">
+      <div class="item"><div class="item-label"><div class="item-icon">🌸</div><div class="item-name">健　康</div></div><div class="item-text" id="health"></div></div>
+      <div class="item"><div class="item-label"><div class="item-icon">💕</div><div class="item-name">恋　愛</div></div><div class="item-text" id="love"></div></div>
+      <div class="item"><div class="item-label"><div class="item-icon">💼</div><div class="item-name">仕　事</div></div><div class="item-text" id="work"></div></div>
+      <div class="item"><div class="item-label"><div class="item-icon">📚</div><div class="item-name">学　業</div></div><div class="item-text" id="study"></div></div>
+      <div class="item"><div class="item-label"><div class="item-icon">💰</div><div class="item-name">金　運</div></div><div class="item-text" id="money"></div></div>
+      <div class="item"><div class="item-label"><div class="item-icon">🌟</div><div class="item-name">総　運</div></div><div class="item-text" id="overall"></div></div>
+    </div>
+    <div class="retry-area">
+      <div class="count-badge" id="countBadge"></div>
+      <button class="retry-btn" onclick="reset()">もう一度ひく</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const s=document.getElementById("stars");
+  for(let i=0;i<80;i++){
+    const el=document.createElement("div"); el.className="star";
+    const sz=Math.random()*2+.5;
+    el.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s;`;
+    s.appendChild(el);
+  }
+})();
+
+let fortuneData=[], usedIndices=[], isDrawing=false;
+
+async function loadData(){
+  try{
+    const res=await fetch("omikuji_data.json");
+    if(!res.ok) throw new Error("fetch failed");
+    fortuneData=await res.json();
+    console.log(`読み込み完了: ${fortuneData.length}件`);
+  }catch(e){
+    console.error(e);
+    document.getElementById("tubeWrapper").style.opacity=".4";
+    document.getElementById("tubeWrapper").style.pointerEvents="none";
+    document.getElementById("tubeHint").textContent="データ読み込みエラー";
+    document.getElementById("errorMsg").classList.add("show");
+  }
+}
+loadData();
+
+function pickFortune(){
+  if(!fortuneData.length) return null;
+  if(usedIndices.length>=fortuneData.length) usedIndices=[];
+  let idx, tries=0;
+  do{ idx=Math.floor(Math.random()*fortuneData.length); tries++; }
+  while(usedIndices.includes(idx)&&tries<50);
+  usedIndices.push(idx);
+  return fortuneData[idx];
+}
+
+function startDraw(){
+  if(isDrawing||!fortuneData.length) return;
+  isDrawing=true;
+  // const tubeBody=document.getElementById("tubeBody");
+  const tube = document.querySelector(".tube");
+  const stick=document.getElementById("stick");
+  document.getElementById("tubeHint").style.opacity="0";
+  // tubeBody.classList.add("shaking");
+  tube.classList.add("shaking");
+  setTimeout(()=>{ stick.classList.add("out"); },300);
+  setTimeout(()=>{
+    // tubeBody.classList.remove("shaking");
+    tube.classList.remove("shaking");
+    stick.classList.remove("out");
+    document.getElementById("tubeArea").style.display="none";
+    const loading=document.getElementById("loading"); loading.classList.add("show");
+    setTimeout(()=>{ const f=pickFortune(); if(f) showResult(f); loading.classList.remove("show"); },1200);
+  },900);
+}
+
+function showResult(f){
+  document.getElementById("fortuneName").textContent=f.name;
+  document.getElementById("fortuneName").className="fortune-name "+f.cls;
+  document.getElementById("fortuneSub").textContent=f.sub;
+  document.getElementById("mikujiNum").textContent="第"+f.num+"番";
+  document.getElementById("health").textContent=f.health;
+  document.getElementById("love").textContent=f.love;
+  document.getElementById("work").textContent=f.work;
+  document.getElementById("study").textContent=f.study;
+  document.getElementById("money").textContent=f.money;
+  document.getElementById("overall").textContent=f.overall;
+  document.getElementById("countBadge").textContent=`全${fortuneData.length}種 · 既出${usedIndices.length}種`;
+  const card=document.getElementById("resultCard");
+  card.classList.remove("show");
+  card.style.display="none";
+  card.scrollTop=0;
+  // 表示直後・アニメーション中・アニメーション後の3回スクロールを0に固定
+  card.style.display="";
+  card.scrollTop=0;
+  card.classList.add("show");
+  card.scrollTop=0;
+  requestAnimationFrame(()=>{ card.scrollTop=0; });
+  setTimeout(()=>{ card.scrollTop=0; }, 100);
+  setTimeout(()=>{ card.scrollTop=0; }, 700);
+  // 表示直後にも強制リセット（一部ブラウザ対策）
+  card.scrollTop=0;
+  requestAnimationFrame(()=>{ card.scrollTop=0; });
+  if(f.cls!=="kyo") launchConfetti(f.cls);
+}
+
+function launchConfetti(cls){
+  const colors=cls==="daikichi"?["#c0392b","#e74c3c","#f39c12","#f1c40f","#fff","#c9943a"]:
+    cls==="chukichi"?["#e67e22","#f39c12","#f1c40f","#c9943a","#fff"]:
+    cls==="kichi"?["#27ae60","#2ecc71","#f1c40f","#fff","#c9943a"]:
+    ["#7f8c8d","#95a5a6","#bdc3c7","#f1c40f"];
+  const count=cls==="daikichi"?150:cls==="chukichi"?100:60;
+  for(let i=0;i<count;i++){
+    setTimeout(()=>{
+      const c=document.createElement("div"); c.className="confetti-piece";
+      const w=6+Math.random()*10,h=4+Math.random()*8;
+      c.style.cssText=`width:${w}px;height:${h}px;background:${colors[Math.floor(Math.random()*colors.length)]};left:${Math.random()*100}vw;top:-20px;border-radius:${Math.random()>.5?'50%':'2px'};`;
+      document.body.appendChild(c);
+      let x=0,y=-20,vx=(Math.random()-.5)*4,vy=2+Math.random()*5;
+      const grav=.12; let angle=Math.random()*360,spin=(Math.random()-.5)*8;
+      function tick(){ vy+=grav; vx*=.99; x+=vx+Math.sin(angle*Math.PI/180)*1.2; y+=vy; angle+=spin;
+        c.style.transform=`translate(${x}px,${y}px) rotate(${angle}deg)`;
+        if(y<window.innerHeight+40) requestAnimationFrame(tick); else c.remove(); }
+      requestAnimationFrame(tick);
+    },i*15);
+  }
+}
+
+function reset(){
+  isDrawing=false;
+  const card=document.getElementById("resultCard");
+  card.classList.remove("show");
+  card.style.display="none";
+  card.scrollTop=0;
+  card.style.display="";
+  document.getElementById("tubeArea").style.display="";
+  document.getElementById("tubeHint").style.opacity="1";
+  document.querySelectorAll(".confetti-piece").forEach(c=>c.remove());
+}
+</script>
+
+</body>
+</html>
